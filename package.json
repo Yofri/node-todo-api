@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
     "mongodb": "^2.2.30",
     "mongoose": "^4.11.6"
   }
