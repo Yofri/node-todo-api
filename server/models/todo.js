@@ -17,9 +17,9 @@ let Todo = mongoose.model('Todo', {
   }
 });
 
-let newTodo = new Todo({
-  text: 'Cook dinner'
-});
+// let newTodo = new Todo({
+//   text: 'Cook dinner'
+// });
 
 // newTodo.save().then((doc) => {
 //   console.log('Saved todo');

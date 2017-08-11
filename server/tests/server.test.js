@@ -1,56 +1,15 @@
 const expect = require('expect');
 const request = require('supertest');
 
+const {ObjectID} = require('mongodb');
 const {app} = require('../server');
 const {Todo} = require('../models/todo');
 
-// beforeEach((done) => {
-//   Todo.remove({}).then(() => done());
-// });
-
-// describe('POST /todos', () => {
-//   it('should create a new todo', (done) => {
-//     let text = 'Test todo text';
-//
-//     request(app)
-//       .post('/todos')
-//       .send({text})
-//       .expect(200)
-//       .expect((res) => {
-//         expect(res.body.text).toBe(text);
-//       })
-//       .end((err, res) => {
-//         if (err) return done(err);
-//
-//         Todo.find().then((todos) => {
-//           expect(todos.length).toBe(1);
-//           expect(todos[0].text).toBe(text);
-//           done();
-//         }).catch(err => done(err));
-//       });
-//   });
-// });
-
-// describe('POST /todos', () => {
-//   it('should not create a new todo', (done) => {
-//     request(app)
-//       .post('/todos')
-//       .send({})
-//       .expect(400)
-//       .end((err, res) => {
-//         if (err) return done(err);
-//
-//         Todo.find().then((todos) => {
-//           expect(todos.length).toBe(0);
-//           done();
-//         }).catch(err => done(err));
-//       });
-//   });
-// });
-
 const todos = [{
+  _id: new ObjectID,
   text: 'First test todo'
 }, {
+  _id: new ObjectID,
   text: 'Second test todo'
 }];
 
@@ -58,6 +17,46 @@ beforeEach((done) => {
   Todo.remove({}).then(() => {
     return Todo.insertMany(todos);
   }).then(() => done());
+});
+
+describe('POST /todos', () => {
+  it('should create a new todo', (done) => {
+    let text = 'First test todo';
+
+    request(app)
+      .post('/todos')
+      .send({text})
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.text).toBe(text);
+      })
+      .end((err, res) => {
+        if (err) return done(err);
+
+        Todo.find().then((todos) => {
+          expect(todos.length).toBe(3);
+          expect(todos[0].text).toBe(text);
+          done();
+        }).catch(err => done(err));
+      });
+  });
+});
+
+describe('POST /todos', () => {
+  it('should not create a new todo', (done) => {
+    request(app)
+      .post('/todos')
+      .send({})
+      .expect(400)
+      .end((err, res) => {
+        if (err) return done(err);
+
+        Todo.find().then((todos) => {
+          expect(todos.length).toBe(2);
+          done();
+        }).catch(err => done(err));
+      });
+  });
 });
 
 describe('GET /todos', () => {
@@ -69,5 +68,33 @@ describe('GET /todos', () => {
         expect(res.body.todos.length).toBe(2);
       })
       .end(done);
+  });
+});
+
+describe('GET /todos:id', () => {
+  it('should return todo docs', (done) => {
+    request(app)
+      .get(`/todos/${todos[0]._id.toString()}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe(todos[0].text);
+      })
+      .end(done);
+  });
+
+  it('should return 404 if todo not found', (done) => {
+    const id = new ObjectID().toString();
+
+    request(app)
+      .get(`/todos/${id}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 for non-object ids', (done) => {
+    request(app)
+      .get('/todos/123abc')
+      .expect(404)
+      .end(done)
   });
 });
