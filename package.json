@@ -4,8 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "node server/server",
     "test": "mocha server/**/*.test.js",
-    "test-watch": "nodemon --exec \"yarn test\"" 
+    "test-watch": "nodemon --exec \"yarn test\""
+  },
+  "engines": {
+    "node": "8.2.1"
   },
   "dependencies": {
     "body-parser": "^1.17.2",
