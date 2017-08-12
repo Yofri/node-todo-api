@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon server/server",
+    "start": "node server/server",
     "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js"
   },
   "engines": {
