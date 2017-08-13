@@ -7,12 +7,17 @@ const postUsers = (req, res) => {
   const user = new User(body);
 
   user.save().then(() => {
-    user.generateAuthToken();
+    return user.generateAuthToken();
   }).then((token) => {
     res.header('x-auth', token).send(user);
   }).catch(err => res.status(400).send(err));
-}
+};
+
+const getUsers = (req, res) => {
+  res.send(req.user);
+};
 
 module.exports = {
-  postUsers
+  postUsers,
+  getUsers
 }
