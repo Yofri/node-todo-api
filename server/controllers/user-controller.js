@@ -17,7 +17,18 @@ const getUsers = (req, res) => {
   res.send(req.user);
 };
 
+const postUsersLogin = (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch(() => res.status(400).send());
+}
+
 module.exports = {
   postUsers,
-  getUsers
+  getUsers,
+  postUsersLogin
 }
