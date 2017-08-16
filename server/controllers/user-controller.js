@@ -27,8 +27,15 @@ const postUsersLogin = (req, res) => {
   }).catch(() => res.status(400).send());
 }
 
+const deleteUsersToken = (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }).catch(() => res.status(400). send());
+}
+
 module.exports = {
   postUsers,
   getUsers,
-  postUsersLogin
+  postUsersLogin,
+  deleteUsersToken
 }

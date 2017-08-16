@@ -20,6 +20,7 @@ app.patch('/todos/:id', todoController.patchTodosId);
 app.post('/users', userController.postUsers);
 app.get('/users/me', middleware.authenticate, userController.getUsers);
 app.post('/users/login', userController.postUsersLogin);
+app.delete('/users/me/token', middleware.authenticate, userController.deleteUsersToken);
 app.listen(port, () => console.log(`App started on port ${port}`));
 
 module.exports = {app};
