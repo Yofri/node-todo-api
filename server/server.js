@@ -12,11 +12,12 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
-app.post('/todos', todoController.postTodos);
-app.get('/todos', todoController.getTodos);
-app.get('/todos/:id', todoController.getTodosId);
-app.delete('/todos/:id', todoController.deleteTodosId);
-app.patch('/todos/:id', todoController.patchTodosId);
+app.post('/todos', middleware.authenticate, todoController.postTodos);
+app.get('/todos', middleware.authenticate, todoController.getTodos);
+app.get('/todos/:id', middleware.authenticate, todoController.getTodosId);
+app.delete('/todos/:id', middleware.authenticate, todoController.deleteTodosId);
+app.patch('/todos/:id', middleware.authenticate, todoController.patchTodosId);
+
 app.post('/users', userController.postUsers);
 app.get('/users/me', middleware.authenticate, userController.getUsers);
 app.post('/users/login', userController.postUsersLogin);

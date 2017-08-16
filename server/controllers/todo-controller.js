@@ -4,7 +4,8 @@ const {ObjectID} = require('mongodb');
 
 const postTodos = (req, res) => {
   const todo = new Todo({
-    text: req.body.text
+    text: req.body.text,
+    _creator: req.user._id
   });
 
   todo.save().then((doc) => {
@@ -13,7 +14,9 @@ const postTodos = (req, res) => {
 }
 
 const getTodos = (req, res) => {
-  Todo.find().then((todos) => {
+  Todo.find({
+    _creator: req.user._id
+  }).then((todos) => {
     res.send({todos});
   }).catch(() => res.status(400).send());
 }
@@ -22,7 +25,10 @@ const getTodosId = (req, res) => {
   const id = req.params.id;
   if (!ObjectID.isValid(id)) return res.status(404).send();
 
-  Todo.findById(id).then((todo) => {
+  Todo.findOne({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo) => {
     if (!todo) return res.status(404).send();
     res.send({todo});
   }).catch(() => res.status(400).send());
@@ -33,7 +39,10 @@ const deleteTodosId = (req, res) => {
 
   if (!ObjectID.isValid(id)) return res.status(404).send();
 
-  Todo.findByIdAndRemove(id).then((todo) => {
+  Todo.findOneAndRemove({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo) => {
     if (!todo) return res.status(404).send();
 
     res.send({todo});
@@ -53,7 +62,10 @@ const patchTodosId = (req, res) => {
     body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(id, {$set: body}, {new: true})
+  Todo.findOneAndUpdate({
+    _id: id,
+    _creator: req.user._id
+  }, {$set: body}, {new: true})
     .then((todo) => {
       if (!todo) return res.status(404).send();
 
