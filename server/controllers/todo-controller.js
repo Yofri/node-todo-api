@@ -34,19 +34,23 @@ const getTodosId = (req, res) => {
   }).catch(() => res.status(400).send());
 }
 
-const deleteTodosId = (req, res) => {
-  const id = req.params.id;
+const deleteTodosId = async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    if (!ObjectID.isValid(id)) return res.status(404).send();
+  
+    const todo = await Todo.findOneAndRemove({
+      _id: id,
+      _creator: req.user._id
+    });
 
-  if (!ObjectID.isValid(id)) return res.status(404).send();
-
-  Todo.findOneAndRemove({
-    _id: id,
-    _creator: req.user._id
-  }).then((todo) => {
     if (!todo) return res.status(404).send();
 
     res.send({todo});
-  }).catch(() => res.status(400).send());
+  } catch (err) {
+    res.status(400).send();
+  }
 }
 
 const patchTodosId = (req, res) => {

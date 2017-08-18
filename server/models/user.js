@@ -81,7 +81,6 @@ UserSchema.statics.findByCredentials = function (email, password) {
     if (!user) return reject();
 
     return bcrypt.compare(password, user.password).then((res) => {
-      // (res) ? user : reject();
       if (res) {
         return user;
       } else {

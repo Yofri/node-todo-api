@@ -2,35 +2,41 @@ const _ = require('lodash');
 const {User} = require('../models/user');
 const {ObjectID} = require('mongodb');
 
-const postUsers = (req, res) => {
-  const body = _.pick(req.body, ['email', 'password']);
-  const user = new User(body);
-
-  user.save().then(() => {
-    return user.generateAuthToken();
-  }).then((token) => {
-    res.header('x-auth', token).send(user);
-  }).catch(err => res.status(400).send(err));
+const postUsers = async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['email', 'password']);
+    const user = new User(body);
+    await user.save();
+    const token = await user.generateAuthToken();
+    const auth = await res.header('x-auth', token).send(user);
+  } catch (err) {
+    res.status(400).send(err);
+  }
 };
 
 const getUsers = (req, res) => {
   res.send(req.user);
 };
 
-const postUsersLogin = (req, res) => {
-  const body = _.pick(req.body, ['email', 'password']);
+const postUsersLogin = async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['email', 'password']);
+    const user = await User.findByCredentials(body.email, body.password);
+    const token = await user.generateAuthToken();
 
-  User.findByCredentials(body.email, body.password).then((user) => {
-    return user.generateAuthToken().then((token) => {
-      res.header('x-auth', token).send(user);
-    });
-  }).catch(() => res.status(400).send());
+    res.header('x-auth', token).send(user);
+  } catch (err) {
+    res.status(400).send()
+  }
 }
 
-const deleteUsersToken = (req, res) => {
-  req.user.removeToken(req.token).then(() => {
+const deleteUsersToken = async (req, res) => {
+  try {
+    await req.user.removeToken(req.token);
     res.status(200).send();
-  }).catch(() => res.status(400). send());
+  } catch (err) {
+    res.status(400).send();
+  }
 }
 
 module.exports = {
